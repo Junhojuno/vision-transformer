@@ -1,4 +1,5 @@
 # vision-transformer
+Transformer in vision task.
 
 ## paper review
   - [ ] Attention Is All You Need
