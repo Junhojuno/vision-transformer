@@ -51,7 +51,6 @@ class VisionTransformer(nn.Module):
         num_patches = self.patch_emb.num_patches
         
         self.cls_token = nn.Parameter(torch.zeros(1, 1, embed_dims))
-        self.dist_token = None # ?
         self.position_embed = nn.Parameter(torch.zeros(1, num_patches + 1, embed_dims))
         self.position_drop = nn.Dropout(p=drop_rate)
         
@@ -65,7 +64,8 @@ class VisionTransformer(nn.Module):
                   attn_drop_rate=attn_drop_rate,
                   drop_path=dpr[i],
                   activation_layer=activation_layer,
-                  norm_layer=norm_layer) for i in range(num_blocks)
+                  norm_layer=norm_layer
+                  ) for i in range(num_blocks)
             ]
                                     )
         self.norm = norm_layer(embed_dims)
@@ -98,17 +98,26 @@ class VisionTransformer(nn.Module):
         return x
     
     def __weight_initialize(self):
-        # head_bias = -math.log(self.num_classes)
         self.position_embed = trunc_normal(self.position_embed, std=0.02)
         self.cls_token = trunc_normal(self.cls_token, std=0.02)
         self.apply(init_vit_weights)
         
     def load_pretrained(self):
         """using pretrained weights"""
+        pass
 
 
 class Block(nn.Module):
-    """blocks which is iterated L times"""
+    """
+    Block is composed of multi-head attention & MLP(feedforward).
+        (1) norm_layer 
+        (2) multi-head attention 
+        (3) shortcut 
+        (4) norm_layer 
+        (5) MLP 
+        (6) shortcut
+    It will be iterated several times
+    """
     
     def __init__(self, 
                  in_features, 

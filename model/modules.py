@@ -1,15 +1,30 @@
-"""sub modules for composing ViT"""
+"""sub-modules for composing ViT"""
 import torch
 from torch import nn
 
 
 class PatchEmbedding(nn.Module):
-    """small patches embedding
+    """
+    small patches embedding
     image(B, C, H, W) -> projection(B, emb_dims, H/P, W/P) -> flatten & transpose(B, {(H/P) * (W/P)}, embed_dims)
-    
     """
     
-    def __init__(self, image_size=224, patch_size=16, in_channels=3, embed_dims=768, norm_layer=None, flatten=True):
+    def __init__(self, 
+                 image_size=224, 
+                 patch_size=16, 
+                 in_channels=3, 
+                 embed_dims=768, 
+                 norm_layer=None, 
+                 flatten=True):
+        """
+        Args:
+            image_size (int, optional): input image size. Defaults to 224.
+            patch_size (int, optional): patch image size. Defaults to 16.
+            in_channels (int, optional): input image channels, almost 3. Defaults to 3.
+            embed_dims (int, optional): patch embedding dimension. Defaults to 768.
+            norm_layer (nn.Module, optional): if exists, it means LayerNorm. Defaults to None.
+            flatten (bool, optional): flatten the last two layers. Defaults to True.
+        """
         super(PatchEmbedding, self).__init__()
         self.image_size = image_size if isinstance(image_size, tuple) else (image_size, image_size)
         self.patch_size = patch_size if isinstance(patch_size, tuple) else (patch_size, patch_size)
@@ -29,7 +44,10 @@ class PatchEmbedding(nn.Module):
 
 
 class MultiHeadAttention(nn.Module):
-    """Multi-head self attention layer"""
+    """
+    Multi-head self attention layer
+    
+    """
     
     def __init__(self, in_features, num_heads=8, qkv_bias=False, attention_drop=0., proj_drop=0.):
         """
@@ -73,7 +91,10 @@ class MultiHeadAttention(nn.Module):
 
 
 class MLP(nn.Module):
-    """MLP"""
+    """
+    Multi Layer Perceptron
+    I do compose it of two fully connected layers(a.k.a Linear layer)
+    """
     
     def __init__(self, in_features, hidden_features=None, out_features=None, activation_layer=nn.GELU, drop_rate=0.):
         super(MLP, self).__init__()
